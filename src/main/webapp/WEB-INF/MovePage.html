@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Moving Category</title>
+    <link rel="stylesheet" type="text/css" media="all"
+        href="../CSS/move.css" th:href="@{/resources/css/move.css}" />
+</head>
+<body>
+
+    <ul>
+        <!--/* the category parameter to use in the fragment is the current child */-->
+        <li th:each="category : ${topcategories}"
+            th:insert="@{WEB-INF/movefragment.html} :: list (category,0)"></li>
+    </ul>
+
+</body>
+</html>

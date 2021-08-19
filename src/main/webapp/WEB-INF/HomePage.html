@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Home Page</title>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../CSS/home.css" th:href="@{/resources/css/home.css}" />
+</head>
+
+<body>
+
+    <div align="right">
+        <a th:href="@{/Logout}">Logout</a>
+    </div>
+
+    <h1>Welcome,
+        <span th:text="${session.user.name + ' ' + session.user.surname}">User A</span>!
+    </h1>
+
+
+
+    <ul>
+        <!--/* the category parameter to use in the fragment is the current child */-->
+        <li th:each="category : ${topcategories}"
+            th:insert="@{WEB-INF/fragment.html} :: list (category)"></li>
+    </ul>
+
+
+    <div  class="formdiv">
+        <p>Complete the form to create a category</p>
+        <form action="#" th:action="@{/CreateCategory}" method="POST">
+            <fieldset>
+                <p>
+                    Name: <input type="text" name="newname" required />
+                </p>
+
+                <p>
+                    <label>Choose a father category:</label>
+                    <select
+                        name="fid" id="fid">
+                    <option th:each="c : ${allcategories}" th:value="${c.id}"
+                            th:text="${c.name}"></option>
+                    </select>
+                </p>
+
+                <input type="submit" name="Create Category">
+            </fieldset>
+        </form>
+    </div>
+
+
+</body>
+</html>
