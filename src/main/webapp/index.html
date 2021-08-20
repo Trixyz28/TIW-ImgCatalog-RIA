@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
+    <meta charset="ISO-8859-1">
+    <title>Login page</title>
+    <script src="utils.js" charset="ISO-8859-1" defer></script>
+    <script src="loginManagement.js" charset="ISO-8859-1" defer></script>
+
 </head>
+
 <body>
-    <h1>Welcome to the image classification page!</h1>
+    <h1>Welcome to the image catalogation page</h1>
 
-    <form action="Login" method="POST">
-        Username: <input type="text" name="username" required> <br>
-        Password: <input type="password" name="password" required><br>
-        <input type="submit" value="login">
-        <!-- tag <p>: paragraph -->
-        <p th:text=" ${errorMsg}"></p>
+    <form action="#">
+        <fieldset>
+            Username: <input type="text" name="username" required> <br>
+            Password: <input type="password" name="password" required><br>
+            <input id="loginbutton" type="button" value="login">
+            <p id="errormessage"></p>
+        </fieldset>
     </form>
-
 
 </body>
 </html>
