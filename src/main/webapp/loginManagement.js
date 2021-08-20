@@ -11,33 +11,35 @@
         if (form.checkValidity()) {
 
             // Crea una XMLHttpRequest
-            makeCall("POST", 'Login', e.target.closest("form"),
-                function(x) {
-                    if (x.readyState == XMLHttpRequest.DONE) {
-                        var message = x.responseText;
-                        switch (x.status) {
-                            case 200:
+            makeCall("POST", 'Login', e.target.closest("form"), function(x) {
 
-                                // Per poi mostrare il nome dell'utente nella home page
-                                sessionStorage.setItem('username', message);
+                if (x.readyState == XMLHttpRequest.DONE) {
+                    var message = x.responseText;
 
-                                // Reindirizzamento dell'utente
-                                window.location.href = "HomePage.html";
-                                break;
+                    switch (x.status) {
 
-                            case 400: // bad request
-                                document.getElementById("errormessage").textContent = message;
-                                break;
-                            case 401: // unauthorized
-                                document.getElementById("errormessage").textContent = message;
-                                break;
-                            case 500: // server error
-                                document.getElementById("errormessage").textContent = message;
-                                break;
-                        }
+                        case 200:
+                            // Per poi mostrare il nome dell'utente nella home page
+                            sessionStorage.setItem("userinfo", message);
+
+                            // Reindirizzamento dell'utente
+                            window.location.href = "HomePage.html";
+                            break;
+
+                        case 400: // bad request
+                            document.getElementById("errormessage").textContent = message;
+                            break;
+
+                        case 401: // unauthorized
+                            document.getElementById("errormessage").textContent = message;
+                            break;
+
+                        case 500: // server error
+                            document.getElementById("errormessage").textContent = message;
+                            break;
                     }
                 }
-            );
+            });
 
         } else {
 

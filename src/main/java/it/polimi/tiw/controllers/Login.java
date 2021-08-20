@@ -66,11 +66,12 @@ public class Login extends HttpServlet {
             response.getWriter().println("Incorrect credentials");
 
         } else {
+            // Save user in the session attributes
             request.getSession().setAttribute("user", user);
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(username);
+            response.getWriter().println(user.getName() + ' ' + user.getSurname());
         }
     }
 }

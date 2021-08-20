@@ -3,9 +3,6 @@ package it.polimi.tiw.controllers;
 import it.polimi.tiw.dao.CategoryDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
 import org.apache.commons.text.StringEscapeUtils;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -14,29 +11,18 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@WebServlet("/CreateCategory")
-public class CreateCategory extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private TemplateEngine templateEngine;
-    private Connection connection = null;
-    /*
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    }
-     */
+@WebServlet("/CreateCategory")
+@MultipartConfig
+public class CreateCategory extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+    private Connection connection = null;
+
 
     public void init() throws ServletException {
         connection = ConnectionHandler.getConnection(getServletContext());
-
-        ServletContext servletContext = getServletContext();
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        this.templateEngine = new TemplateEngine();
-        this.templateEngine.setTemplateResolver(templateResolver);
-        templateResolver.setSuffix(".html");
     }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -63,7 +49,8 @@ public class CreateCategory extends HttpServlet {
         }
 
         if(badRequest) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter id with format number is required");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Wrong parameter values");
             return;
         }
 
@@ -74,14 +61,15 @@ public class CreateCategory extends HttpServlet {
 
         } catch(Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Error in creating the category");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("Error in creating the category");
             return;
         }
 
-        String contextPath = getServletContext().getContextPath();
-        String path = contextPath + "/GoToHomePage";
-        response.sendRedirect(path);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().print("ok");
 
     }
 
