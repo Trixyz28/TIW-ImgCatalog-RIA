@@ -7,6 +7,7 @@
     let categoriesList;
     let creationForm;
     let startElement;
+    let confirmButton;
 
 
     window.addEventListener("load", () => {
@@ -48,6 +49,16 @@
                 alertContainer,
                 document.getElementById("id_categoryform")
             );
+
+            confirmButton = new ConfirmButton(
+                alertContainer,
+                document.getElementById("id_confirmbutton")
+            );
+
+
+
+
+
 
             document.getElementById("id_formbutton").addEventListener(
                 "click", (e) => {
@@ -107,6 +118,7 @@
             categoriesList.show();
             creationForm.reset();
             creationForm.show();
+            confirmButton.reset();
 
 
         };
@@ -177,6 +189,20 @@
         }
     }
 
+    function ConfirmButton(_alert, button) {
+
+        this.reset = function() {
+            button.style.visibility = "hidden";
+            button.disabled = true;
+        }
+
+        this.show = function () {
+            button.disabled = false;
+            button.style.visibility = "visible";
+        }
+
+    }
+
 
     function printCategory(container, categories) {
 
@@ -227,6 +253,7 @@
 
         li.addEventListener("drop", (e) => {
            drop(e);
+           confirmButton.show();
         });
 
     }
