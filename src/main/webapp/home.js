@@ -6,6 +6,7 @@
     let pageOrchestrator = new PageOrchestrator();
     let categoriesList;
     let creationForm;
+    let startElement;
 
 
     window.addEventListener("load", () => {
@@ -178,6 +179,7 @@
 
 
     function printCategory(container, categories) {
+
         if(!categories) {
             return;
         }
@@ -189,6 +191,7 @@
             var categoryNum, categoryName, linkText, anchor;
 
             const li = document.createElement("li");
+            li.draggable = true;
             categoryNum = document.createTextNode( category.position + " ");
             categoryName = document.createTextNode(category.name + "  ");
 
@@ -197,6 +200,7 @@
 
             li.setAttribute("categoryid",category.id);
 
+            setLiEvents(li);
 
             if(category.subClasses) {
                 printCategory(li,category.subClasses);
@@ -205,6 +209,27 @@
 
         }
         container.appendChild(ul);
+    }
+
+    function setLiEvents(li) {
+
+        li.addEventListener("dragstart",(e) => {
+            dragStart(e);
+        });
+
+        li.addEventListener("dragover", (e) => {
+            dragOver(e);
+        });
+
+        li.addEventListener("dragleave", (e) => {
+            dragLeave(e);
+        });
+
+        li.addEventListener("drop", (e) => {
+           drop(e);
+        });
+
+
     }
 
 
@@ -263,6 +288,56 @@
 
 
 
+    }
+
+
+    function unselectRows(rowsArray) {
+        for (var i = 0; i < rowsArray.length; i++) {
+            rowsArray[i].className = "notselected";
+        }
+    }
+
+    function dragStart(event) {
+        /* we need to save in a variable the row that provoked the event
+         to then move it to the new position */
+        startElement = event.target.closest("li");
+    }
+
+    function dragOver(event) {
+        // We need to use prevent default, otherwise the drop event is not called
+        event.preventDefault();
+
+        // We need to select the row that triggered this event to marked as "selected" so it's clear for the user
+        var dest = event.target.closest("li");
+
+        // Mark  the current element as "selected", then with CSS we will put it in red
+        dest.className = "selected";
+    }
+
+    function dragLeave(event) {
+        // We need to select the row that triggered this event to marked as "notselected" so it's clear for the user
+        var dest = event.target.closest("li");
+
+        // Mark  the current element as "notselected", then with CSS we will put it in black
+        dest.className = "notselected";
+    }
+
+    function drop(event) {
+
+        // Obtain the row on which we're dropping the dragged element
+        var destLi = event.target.closest("li");
+        var destUl = destLi.lastChild;
+
+        // modifiedList.add([startElement.id,dest.id]);
+
+        // Obtain the index of the row in the table to use it as reference
+        // for changing the dragged element position
+
+        destUl.appendChild(startElement);
+
+
+        // Mark all rows in "not selected" class to reset previous dragOver
+        //unselectRows();
     }
 
 
