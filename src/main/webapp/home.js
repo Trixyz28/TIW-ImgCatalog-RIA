@@ -118,48 +118,56 @@
         this.update = function(arrayCategories) {
 
             // svuotare la tabella
-            this.listcontainerbody.innerHTML = "";
+            this.listcontainer.innerHTML = "";
 
             var self = this;
-            var ul = self.listcontainerbody;
+            var container = self.listcontainer;
 
-            arrayCategories.forEach((category) => printCategory(ul,category,""));
+            printCategory(container,arrayCategories);
+            // arrayCategories.forEach((category) => printCategory(ul,category));
 
             this.listcontainer.style.visibility = "visible";
         }
     }
 
-    function printCategory(ul,category,format) {
 
-
-        var row, span, categoryNum, categoryName, link, linkText, anchor;
-
-        row = document.createElement("li");
-
-        categoryNum = document.createTextNode( format + category.position + " ");
-        categoryName = document.createTextNode(category.name + "  ");
-
-        let format1 = format + "--";
-
-        row.appendChild(categoryNum);
-        row.appendChild(categoryName);
-
-        anchor = document.createElement("a");
-        row.appendChild(anchor);
-
-        linkText = document.createTextNode("Sposta");
-        anchor.appendChild(linkText);
-        anchor.setAttribute("categoryid",category.id);
-        anchor.addEventListener("click", (e) => {
-            row.visibility = "hidden";
-        }, false);
-
-        anchor.href = "#";
-        ul.appendChild(row);
-
-        if(category.numChild !== 0) {
-            category.subClasses.forEach((child) => printCategory(ul,child,format1));
+    function printCategory(container, categories) {
+        if(!categories) {
+            return;
         }
+
+        const ul = document.createElement("ul");
+
+        for(category of categories) {
+
+            var categoryNum, categoryName, linkText, anchor;
+
+            const li = document.createElement("li");
+            categoryNum = document.createTextNode( category.position + " ");
+            categoryName = document.createTextNode(category.name + "  ");
+
+            li.appendChild(categoryNum);
+            li.appendChild(categoryName);
+
+            anchor = document.createElement("a");
+            li.appendChild(anchor);
+
+            linkText = document.createTextNode("Sposta");
+            anchor.appendChild(linkText);
+            anchor.setAttribute("categoryid",category.id);
+            anchor.addEventListener("click", (e) => {
+                li.visibility = "hidden";
+            }, false);
+            anchor.href = "#";
+
+
+            if(category.subClasses) {
+                printCategory(li,category.subClasses,true);
+            }
+            ul.appendChild(li);
+
+        }
+        container.appendChild(ul);
     }
 
 
