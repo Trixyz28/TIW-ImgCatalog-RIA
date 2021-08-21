@@ -1,4 +1,6 @@
-{
+
+(function() {
+
 
     // Componenti della pagina
     let pageOrchestrator = new PageOrchestrator();
@@ -265,5 +267,6 @@
 
 
 
+})();
 
-}
+

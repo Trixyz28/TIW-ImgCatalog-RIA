@@ -49,3 +49,11 @@ ul li:only-child::before {
     background-color: #000;
     top: 12px;
 }
+
+.selected{
+    color: red;
+}
+
+.notselected{
+    color: black;
+}
