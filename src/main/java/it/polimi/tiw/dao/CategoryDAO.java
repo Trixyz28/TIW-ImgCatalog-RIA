@@ -121,6 +121,8 @@ public class CategoryDAO {
 
     }
 
+
+
     /* Move a category:
     - Get cid and newfid
     - Check recursive link #

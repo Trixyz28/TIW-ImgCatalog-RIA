@@ -229,7 +229,6 @@
            drop(e);
         });
 
-
     }
 
 
@@ -287,7 +286,6 @@
         }
 
 
-
     }
 
 
@@ -297,23 +295,27 @@
         }
     }
 
+    /* The dragstart event is fired when the user starts dragging an element (if it is draggable=True) */
     function dragStart(event) {
         /* we need to save in a variable the row that provoked the event
          to then move it to the new position */
         startElement = event.target.closest("li");
     }
 
+
+    /* The dragover event is fired when an element is being dragged over a valid drop target. */
     function dragOver(event) {
         // We need to use prevent default, otherwise the drop event is not called
         event.preventDefault();
 
-        // We need to select the row that triggered this event to marked as "selected" so it's clear for the user
         var dest = event.target.closest("li");
 
         // Mark  the current element as "selected", then with CSS we will put it in red
         dest.className = "selected";
     }
 
+
+    /* The dragleave event is fired when a dragged element leaves a valid drop target. */
     function dragLeave(event) {
         // We need to select the row that triggered this event to marked as "notselected" so it's clear for the user
         var dest = event.target.closest("li");
@@ -322,24 +324,19 @@
         dest.className = "notselected";
     }
 
+    /* The drop event is fired when an element or text selection is dropped on a valid drop target. */
     function drop(event) {
 
-        // Obtain the row on which we're dropping the dragged element
         var destLi = event.target.closest("li");
         var destUl = destLi.lastChild;
 
         // modifiedList.add([startElement.id,dest.id]);
 
-        // Obtain the index of the row in the table to use it as reference
-        // for changing the dragged element position
-
         destUl.appendChild(startElement);
+        destLi.className = "notselected";
+        startElement.className = "notselected";
 
-
-        // Mark all rows in "not selected" class to reset previous dragOver
-        //unselectRows();
     }
-
 
 
 })();
