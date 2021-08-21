@@ -41,7 +41,7 @@ public class GetCategoryListData extends HttpServlet {
         } catch(Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("Not possible to retrieve categories");
+            response.getWriter().println("Impossible to retrieve categories");
             return;
         }
 
@@ -49,8 +49,6 @@ public class GetCategoryListData extends HttpServlet {
 
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(topCategories);
-        response.getWriter().write(json);
-
         response.setContentType("application/json");
         response.setCharacterEncoding("ISO-8859-1");
         response.getWriter().write(json);

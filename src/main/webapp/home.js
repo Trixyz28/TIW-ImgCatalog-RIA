@@ -1,4 +1,3 @@
-
 {
 
     // Componenti della pagina
@@ -39,7 +38,6 @@
                 document.getElementById("id_listcontainer"),
                 document.getElementById("id_listcontainerbody")
             );
-            categoriesList.show();
 
 
             // inizializzazione del form
@@ -57,6 +55,13 @@
 
         // refresh con
 
+        this.refresh = function() {
+            alertContainer.textContent = "";
+            categoriesList.reset();
+            categoriesList.show();
+
+        };
+
     }
 
 
@@ -69,13 +74,13 @@
     }
 
 
-    function CategoriesList(_alert, _listcontainer, _listcontainerbody) {
+    function CategoriesList(_alert, listcontainer, listcontainerbody) {
         this.alert = _alert;
-        this.listcontainer = _listcontainer;
-        this.listcontainerbody = _listcontainerbody;
+        this.listcontainer = listcontainer;
+        this.listcontainerbody = listcontainerbody;
 
         this.reset = function() {
-            this.listcontainer.style.visibility = "hidden";
+            // this.listcontainer.style.visibility = "hidden";
         }
 
         this.show = function() {
@@ -89,7 +94,9 @@
                     var message = req.responseText;
 
                     if(req.status == 200) {
+
                         var categoriesToShow = JSON.parse(message);
+
                         if(categoriesToShow.length == 0) {
                             self.alert.textContent = "There are no categories present!";
                             return;
@@ -110,26 +117,29 @@
 
         this.update = function(arrayCategories) {
 
-            var row, span, link, linkText, anchor;
+            var row, span, categoryNum, categoryName, link, linkText, anchor;
 
             // svuotare la tabella
             this.listcontainerbody.innerHTML = "";
 
             var self = this;
 
-            arrayCategories.forEach(function(category) {
+            arrayCategories.forEach(function printCategory(category) {
+
 
                 row = document.createElement("li");
 
-                span = document.createElement("span");
-                span.innerHTML = category.position + category.name;
-                row.appendChild(span);
+                categoryNum = document.createTextNode(category.position + " ");
+                categoryName = document.createTextNode(category.name + " ");
+
+                row.appendChild(categoryNum);
+                row.appendChild(categoryName);
 
                 anchor = document.createElement("a");
                 row.appendChild(anchor);
 
                 linkText = document.createTextNode("Sposta");
-                anchor.appendChild(link);
+                anchor.appendChild(linkText);
                 anchor.setAttribute("categoryid",category.id);
                 anchor.addEventListener("click", (e) => {
                     row.visibility = "hidden";
@@ -137,13 +147,23 @@
 
                 anchor.href = "#";
                 self.listcontainerbody.appendChild(row);
+
+
             });
 
             this.listcontainer.style.visibility = "visible";
         }
     }
 
-    function CreationForm() {
+    function printCategory() {
+
+    }
+
+
+
+
+    function CreationForm(alert) {
+
 
     }
 
