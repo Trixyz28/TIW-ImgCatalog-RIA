@@ -8,6 +8,7 @@
     let creationForm;
     let startElement;
     let confirmButton;
+    let modifiedList;
 
 
     window.addEventListener("load", () => {
@@ -44,21 +45,67 @@
             );
 
 
+
+            // inizializzazione lista movimenti
+            modifiedList = new Array();
+
+            // inizializzazione del pulsante di conferma
+            confirmButton = new ConfirmButton(
+                alertContainer,
+                document.getElementById("id_confirmbutton")
+            );
+            confirmButton.reset();
+
+            document.getElementById("id_confirmbutton").addEventListener("click", (e) => {
+
+                var self = this;
+
+                var json = JSON.stringify(modifiedList);
+
+
+                if(modifiedList.length>0) {
+
+                    makeCallArray("POST", "MoveCategory", json,
+                            function (x) {
+
+                        if(x.readyState == XMLHttpRequest.DONE) {
+
+                            var message = x.responseText;
+
+                            switch (x.status) {
+
+                                case 200:
+                                    self.refresh();
+                                    self.alert.textContent = message;
+                                    break;
+
+                                case 400: // bad request
+                                    self.alert.textContent = message;
+                                    break;
+
+                                case 401: // unauthorized
+                                    self.alert.textContent = message;
+                                    break;
+
+                                case 500: // server error
+                                     self.alert.textContent = message;
+                                     break;
+                                }
+                            }
+
+                        });
+                } else {
+                    alertContainer.textContent = "Invalid operation!"
+                }
+            });
+
+
+
             // inizializzazione del form
             creationForm = new CreationForm(
                 alertContainer,
                 document.getElementById("id_categoryform")
             );
-
-            confirmButton = new ConfirmButton(
-                alertContainer,
-                document.getElementById("id_confirmbutton")
-            );
-
-
-
-
-
 
             document.getElementById("id_formbutton").addEventListener(
                 "click", (e) => {
@@ -119,7 +166,7 @@
             creationForm.reset();
             creationForm.show();
             confirmButton.reset();
-
+            modifiedList = new Array();
 
         };
 
@@ -215,18 +262,23 @@
         for(category of categories) {
 
             var categoryNum, categoryName, linkText, anchor;
+            var label;
 
             const li = document.createElement("li");
             li.draggable = true;
+
             categoryNum = document.createTextNode( category.position + " ");
             categoryName = document.createTextNode(category.name + "  ");
 
-            li.appendChild(categoryNum);
-            li.appendChild(categoryName);
+            label = document.createElement("label");
+            label.appendChild(categoryNum)
+            label.appendChild(categoryName);
+            label.setAttribute("categoryid", category.id);
+            li.appendChild(label);
 
             li.setAttribute("categoryid",category.id);
 
-            setLiEvents(li);
+            setListEvents(li,label);
 
             if(category.subClasses) {
                 printCategory(li,category.subClasses);
@@ -237,7 +289,7 @@
         container.appendChild(ul);
     }
 
-    function setLiEvents(li) {
+    function setListEvents(li,label) {
 
         li.addEventListener("dragstart",(e) => {
             dragStart(e);
@@ -251,7 +303,7 @@
             dragLeave(e);
         });
 
-        li.addEventListener("drop", (e) => {
+        label.addEventListener("drop", (e) => {
            drop(e);
            confirmButton.show();
         });
@@ -266,12 +318,15 @@
         this.alert = _alert;
 
         this.reset = function () {
-
+            document.getElementById("id_formdiv").style.display = "none";
         }
 
         this.show = function() {
 
             var self = this;
+
+            document.getElementById("id_formdiv").style.display = "block";
+
             makeCall("GET", "GetCategoryFormData", null, function(req) {
 
                 if(req.readyState == 4) {
@@ -327,6 +382,7 @@
         /* we need to save in a variable the row that provoked the event
          to then move it to the new position */
         startElement = event.target.closest("li");
+        creationForm.reset();
     }
 
 
@@ -355,14 +411,20 @@
     function drop(event) {
 
         var destLi = event.target.closest("li");
-        var destUl = destLi.lastChild;
 
-        // modifiedList.add([startElement.id,dest.id]);
+        var destUl = destLi.lastChild;
 
         destUl.appendChild(startElement);
         destLi.className = "notselected";
         startElement.className = "notselected";
 
+        var fid = destLi.getAttribute("categoryid");
+        var cid = startElement.getAttribute("categoryid");
+
+
+        modifiedList.push([fid,cid]);
+
+        console.table(modifiedList);
     }
 
 

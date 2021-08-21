@@ -17,3 +17,17 @@ function makeCall(method, url, formElement, cback, reset = true) {
         formElement.reset();
     }
 }
+
+function makeCallArray(method, url, element, cback) {
+
+    var req = new XMLHttpRequest();
+
+    req.onreadystatechange = function () {
+        cback(req)
+    };
+
+    req.open(method,url);
+    req.setRequestHeader('Content-Type','application/json');
+    req.send(element);
+
+}

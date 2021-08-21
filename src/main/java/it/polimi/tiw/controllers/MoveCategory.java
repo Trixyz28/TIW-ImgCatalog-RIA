@@ -34,6 +34,10 @@ public class MoveCategory extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+
+
+        /*
         // If the user is not logged in (not present in session) redirect to the login
         String loginpath = getServletContext().getContextPath() + "/index.html";
         HttpSession session = request.getSession();
@@ -88,5 +92,10 @@ public class MoveCategory extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().print("Operation completed successfully");
+
+
+         */
+        System.out.println("receive post!");
     }
+
 }
