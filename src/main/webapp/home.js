@@ -4,9 +4,10 @@
 
     // Componenti della pagina
     let pageOrchestrator = new PageOrchestrator();
+    let alertContainer;
     let categoriesList;
     let creationForm;
-    let startElement;
+    let startUl, startElement;
     let confirmButton;
     let modifiedList;
 
@@ -27,10 +28,10 @@
 
     function PageOrchestrator() {
 
-        // riferimento allo spazio per le notifiche
-        var alertContainer = document.getElementById("id_alert")
-
         this.start = function() {
+
+            // riferimento allo spazio per le notifiche
+            alertContainer = document.getElementById("id_alert")
 
             // inizializzazione del saluto personalizzato
             personalMessage = new PersonalMessage(
@@ -43,7 +44,6 @@
                 alertContainer,
                 document.getElementById("id_listcontainer")
             );
-
 
 
             // inizializzazione lista movimenti
@@ -75,20 +75,20 @@
                             switch (x.status) {
 
                                 case 200:
-                                    self.refresh();
-                                    self.alert.textContent = message;
+                                    pageOrchestrator.refresh();
+                                    alertContainer.textContent = message;
                                     break;
 
                                 case 400: // bad request
-                                    self.alert.textContent = message;
+                                    alertContainer.textContent = message;
                                     break;
 
                                 case 401: // unauthorized
-                                    self.alert.textContent = message;
+                                    alertContainer.textContent = message;
                                     break;
 
                                 case 500: // server error
-                                     self.alert.textContent = message;
+                                     alertContainer.textContent = message;
                                      break;
                                 }
                             }
@@ -120,20 +120,20 @@
 
                                     switch (x.status) {
                                         case 200:
-                                            self.refresh();
-                                            self.alert.textContent = message;
+                                            pageOrchestrator.refresh();
+                                            alertContainer.textContent = message;
                                             break;
 
                                         case 400: // bad request
-                                            self.alert.textContent = message;
+                                            alertContainer.textContent = message;
                                             break;
 
                                         case 401: // unauthorized
-                                            self.alert.textContent = message;
+                                            alertContainer.textContent = message;
                                             break;
 
                                         case 500: // server error
-                                            self.alert.textContent = message;
+                                            alertContainer.textContent = message;
                                             break;
                                     }
                                 }
@@ -381,6 +381,7 @@
     function dragStart(event) {
         /* we need to save in a variable the row that provoked the event
          to then move it to the new position */
+        startUl = event.target.closest("ul");
         startElement = event.target.closest("li");
         creationForm.reset();
     }
@@ -411,20 +412,26 @@
     function drop(event) {
 
         var destLi = event.target.closest("li");
-
         var destUl = destLi.lastChild;
 
-        destUl.appendChild(startElement);
-        destLi.className = "notselected";
-        startElement.className = "notselected";
 
-        var fid = destLi.getAttribute("categoryid");
-        var cid = startElement.getAttribute("categoryid");
+        if(!startElement.contains(destUl)) {
+            destUl.appendChild(startElement);
+            destLi.className = "notselected";
+            startElement.className = "notselected";
+
+            var fid = destLi.getAttribute("categoryid");
+            var cid = startElement.getAttribute("categoryid");
 
 
-        modifiedList.push([fid,cid]);
+            if(confirm("Do you want to confirm the move?")) {
+                modifiedList.push([fid,cid]);
+                console.table(modifiedList);
+            } else {
+                startUl.appendChild(startElement);
+            }
+        }
 
-        console.table(modifiedList);
     }
 
 

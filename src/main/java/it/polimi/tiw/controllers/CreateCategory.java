@@ -67,7 +67,6 @@ public class CreateCategory extends HttpServlet {
         }
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().print("Creation completed");
 

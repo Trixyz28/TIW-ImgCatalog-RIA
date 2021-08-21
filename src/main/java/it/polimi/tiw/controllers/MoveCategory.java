@@ -1,5 +1,6 @@
 package it.polimi.tiw.controllers;
 
+import com.google.gson.Gson;
 import it.polimi.tiw.beans.Category;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.CategoryDAO;
@@ -9,15 +10,22 @@ import org.apache.commons.text.StringEscapeUtils;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-@WebServlet(name = "MoveCategory", value = "/MoveCategory")
+
+@WebServlet("/MoveCategory")
 public class MoveCategory extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
+    private Map<Integer, Integer> modifiedData = new HashMap<>();
+    private Boolean done = false;
 
     public void init() throws ServletException {
         connection = ConnectionHandler.getConnection(getServletContext());
@@ -25,60 +33,49 @@ public class MoveCategory extends HttpServlet {
     }
 
 
+    /*
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request,response);
     }
+
+     */
 
 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        System.out.println("received a post");
 
+        StringBuffer buffer = new StringBuffer();
+        String line = null;
+        try {
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null)
+                buffer.append(line);
+        } catch (Exception e) { /*report an error*/ }
 
-        /*
-        // If the user is not logged in (not present in session) redirect to the login
-        String loginpath = getServletContext().getContextPath() + "/index.html";
-        HttpSession session = request.getSession();
-        if (session.isNew() || session.getAttribute("user") == null) {
-            response.sendRedirect(loginpath);
-            return;
-        }
+        String result = buffer.toString();
 
-        boolean badRequest = false;
+        System.out.println(result);
 
-        String cidParam = StringEscapeUtils.escapeJava(request.getParameter("categoryid"));
-        String destParam = StringEscapeUtils.escapeJava(request.getParameter("destid"));
-
-        int cid = -1;
-        int destid = -1;
-
-        if(cidParam == null || destParam == null) {
-            badRequest = true;
-        }
+        Gson gson = new Gson();
+        int[][] arr;
 
         try {
-            cid = Integer.parseInt(cidParam);
-            destid = Integer.parseInt(destParam);
-
-            if(cid <= 0 || destid <= 0) {
-                badRequest = true;
-            }
-        } catch (NumberFormatException e) {
-            badRequest = true;
-        }
-
-        if(badRequest) {
+            arr = gson.fromJson(result,int[][].class);
+        } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Wrong parameter values");
+            response.getWriter().println("Wrong format");
+            return;
         }
 
 
         CategoryDAO categoryDAO = new CategoryDAO(connection);
 
         try {
-            categoryDAO.moveCategory(cid,destid);
+            categoryDAO.handleMove(arr);
 
         } catch(Exception e) {
 
@@ -89,13 +86,9 @@ public class MoveCategory extends HttpServlet {
         }
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().print("Operation completed successfully");
 
-
-         */
-        System.out.println("receive post!");
     }
 
 }

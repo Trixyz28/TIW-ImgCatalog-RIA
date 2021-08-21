@@ -122,6 +122,36 @@ public class CategoryDAO {
     }
 
 
+    public void handleMove(int[][] arr) throws Exception {
+
+        connection.setAutoCommit(false);
+
+        try {
+            for(int i=0;i<arr.length;i++) {
+
+                if(arr[i][0]<=0 || arr[i][1]<=0) {
+                    throw new Exception();
+                }
+
+                int fid = arr[i][0];
+                int cid = arr[i][1];
+
+                moveCategory(cid,fid);
+
+            }
+
+        } catch(Exception e) {
+            connection.rollback();
+            throw e;
+
+        } finally {
+            connection.setAutoCommit(true);
+        }
+
+
+    }
+
+
 
     /* Move a category:
     - Get cid and newfid
@@ -139,11 +169,6 @@ public class CategoryDAO {
      */
     public void moveCategory(int cid, int destid) throws Exception {
 
-        if(cid<=0 || destid<=0) {
-            throw new Exception();
-        }
-
-        connection.setAutoCommit(false);
 
         Category chosen = findById(cid);
         Category destination = findById(destid);
@@ -155,92 +180,84 @@ public class CategoryDAO {
             throw new SQLException();
         }
 
-        try {
+        if(destination.getNumChild() >= 9) {
+            throw new Exception();
+        }
+        if(cyclicLinkExists(destid,cid)) {
+            throw new Exception();
+        }
 
-            if(destination.getNumChild() >= 9) {
-                throw new Exception();
+        String query = "SELECT father FROM relations WHERE child = ?";
+        try (PreparedStatement pStatement = connection.prepareStatement(query)) {
+            pStatement.setInt(1, cid);
+            try (ResultSet result = pStatement.executeQuery()) {
+                while (result.next()) {
+                    idOldFather = result.getInt(1);
+                }
             }
-            if(cyclicLinkExists(destid,cid)) {
-                throw new Exception();
-            }
+        }
 
-            String query = "SELECT father FROM relations WHERE child = ?";
-            try (PreparedStatement pStatement = connection.prepareStatement(query)) {
-                pStatement.setInt(1, cid);
-                try (ResultSet result = pStatement.executeQuery()) {
-                    while (result.next()) {
-                        idOldFather = result.getInt(1);
+        int oldChildPosition = chosen.getPosition();
+
+        if(idOldFather != destination.getId()) {
+            oldFather = findById(idOldFather);
+
+            int oldNumChild = oldFather.getNumChild();
+            oldFather.setNumChild(oldNumChild-1);
+            updateNumChild(oldNumChild-1,idOldFather);
+
+            int destNumChild = destination.getNumChild();
+            destination.setNumChild(destNumChild+1);
+            updateNumChild(destNumChild+1,destid);
+
+            /* Update child's position and its subtrees' ones*/
+            int newPosition = (destination.getPosition()*10)+ (destNumChild+1);
+            chosen.setPosition(newPosition);
+            updatePosition(newPosition,cid);
+            findSubclasses(chosen);
+            recUpdatePosition(chosen);
+
+            deleteLink(idOldFather, cid);
+            addLink(destid,cid);
+
+            /* Update position index of oldfather's other children, if > chosenposition */
+
+            findSubclasses(oldFather);
+            if(!oldFather.getSubClasses().isEmpty()) {
+                for(Category c : oldFather.getSubClasses()) {
+
+                    if(c.getPosition() > oldChildPosition) {
+                        c.setPosition(c.getPosition()-1);
+                        updatePosition(c.getPosition(),c.getId());
+                        recUpdatePosition(c);
                     }
                 }
             }
 
-            int oldChildPosition = chosen.getPosition();
+        } else {
 
-            if(idOldFather != destination.getId()) {
-                oldFather = findById(idOldFather);
-
-                int oldNumChild = oldFather.getNumChild();
-                oldFather.setNumChild(oldNumChild-1);
-                updateNumChild(oldNumChild-1,idOldFather);
-
-                int destNumChild = destination.getNumChild();
-                destination.setNumChild(destNumChild+1);
-                updateNumChild(destNumChild+1,destid);
-
-                /* Update child's position and its subtrees' ones*/
-                int newPosition = (destination.getPosition()*10)+ (destNumChild+1);
-                chosen.setPosition(newPosition);
-                updatePosition(newPosition,cid);
-                findSubclasses(chosen);
-                recUpdatePosition(chosen);
-
-                deleteLink(idOldFather, cid);
-                addLink(destid,cid);
-
-                /* Update position index of oldfather's other children, if > chosenposition */
-
-                findSubclasses(oldFather);
-                if(!oldFather.getSubClasses().isEmpty()) {
-                    for(Category c : oldFather.getSubClasses()) {
-
+            findSubclasses(destination);
+            if(!destination.getSubClasses().isEmpty()) {
+                for(Category c : destination.getSubClasses()) {
+                    if(c.getId() != cid) {
                         if(c.getPosition() > oldChildPosition) {
                             c.setPosition(c.getPosition()-1);
                             updatePosition(c.getPosition(),c.getId());
                             recUpdatePosition(c);
                         }
+
+                    } else {
+                        int newPosition = (destination.getPosition()*10) + destination.getNumChild();
+                        c.setPosition(newPosition);
+                        updatePosition(c.getPosition(),c.getId());
+                        recUpdatePosition(c);
                     }
-                }
-
-            } else {
-
-                findSubclasses(destination);
-                if(!destination.getSubClasses().isEmpty()) {
-                    for(Category c : destination.getSubClasses()) {
-                        if(c.getId() != cid) {
-                            if(c.getPosition() > oldChildPosition) {
-                                c.setPosition(c.getPosition()-1);
-                                updatePosition(c.getPosition(),c.getId());
-                                recUpdatePosition(c);
-                            }
-
-                        } else {
-                            int newPosition = (destination.getPosition()*10) + destination.getNumChild();
-                            c.setPosition(newPosition);
-                            updatePosition(c.getPosition(),c.getId());
-                            recUpdatePosition(c);
-                        }
 
 
-                    }
                 }
             }
-
-        } catch (SQLException e) {
-            connection.rollback();
-            throw e;
-        } finally {
-            connection.setAutoCommit(true);
         }
+
 
 
     }
