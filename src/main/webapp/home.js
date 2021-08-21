@@ -149,20 +149,11 @@
             li.appendChild(categoryNum);
             li.appendChild(categoryName);
 
-            anchor = document.createElement("a");
-            li.appendChild(anchor);
-
-            linkText = document.createTextNode("Sposta");
-            anchor.appendChild(linkText);
-            anchor.setAttribute("categoryid",category.id);
-            anchor.addEventListener("click", (e) => {
-                li.visibility = "hidden";
-            }, false);
-            anchor.href = "#";
+            li.setAttribute("categoryid",category.id);
 
 
             if(category.subClasses) {
-                printCategory(li,category.subClasses,true);
+                printCategory(li,category.subClasses);
             }
             ul.appendChild(li);
 

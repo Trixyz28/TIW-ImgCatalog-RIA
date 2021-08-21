@@ -1,5 +1,5 @@
 .formdiv {
-    width: "33%";
+    width: 33%;
     float: left;
     display: inline;
     margin: 10px;
@@ -8,13 +8,13 @@
 
 * {list-style: none;}
 
-ul li {
+.listdiv ul li {
     margin-left: 15px;
     position: relative;
     padding-left: 5px;
 }
 
-ul li::before {
+.listdiv ul li::before {
     content: " ";
     position: absolute;
     width: 1px;
@@ -40,7 +40,7 @@ ul li:only-child::before {
     left: -10px;
 }
 
-ul li::after {
+.listdiv ul li::after {
     content: " ";
     position: absolute;
     left: -10px;
