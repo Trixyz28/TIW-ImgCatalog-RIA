@@ -117,46 +117,49 @@
 
         this.update = function(arrayCategories) {
 
-            var row, span, categoryNum, categoryName, link, linkText, anchor;
-
             // svuotare la tabella
             this.listcontainerbody.innerHTML = "";
 
             var self = this;
+            var ul = self.listcontainerbody;
 
-            arrayCategories.forEach(function printCategory(category) {
-
-
-                row = document.createElement("li");
-
-                categoryNum = document.createTextNode(category.position + " ");
-                categoryName = document.createTextNode(category.name + " ");
-
-                row.appendChild(categoryNum);
-                row.appendChild(categoryName);
-
-                anchor = document.createElement("a");
-                row.appendChild(anchor);
-
-                linkText = document.createTextNode("Sposta");
-                anchor.appendChild(linkText);
-                anchor.setAttribute("categoryid",category.id);
-                anchor.addEventListener("click", (e) => {
-                    row.visibility = "hidden";
-                }, false);
-
-                anchor.href = "#";
-                self.listcontainerbody.appendChild(row);
-
-
-            });
+            arrayCategories.forEach((category) => printCategory(ul,category,""));
 
             this.listcontainer.style.visibility = "visible";
         }
     }
 
-    function printCategory() {
+    function printCategory(ul,category,format) {
 
+
+        var row, span, categoryNum, categoryName, link, linkText, anchor;
+
+        row = document.createElement("li");
+
+        categoryNum = document.createTextNode( format + category.position + " ");
+        categoryName = document.createTextNode(category.name + "  ");
+
+        let format1 = format + "--";
+
+        row.appendChild(categoryNum);
+        row.appendChild(categoryName);
+
+        anchor = document.createElement("a");
+        row.appendChild(anchor);
+
+        linkText = document.createTextNode("Sposta");
+        anchor.appendChild(linkText);
+        anchor.setAttribute("categoryid",category.id);
+        anchor.addEventListener("click", (e) => {
+            row.visibility = "hidden";
+        }, false);
+
+        anchor.href = "#";
+        ul.appendChild(row);
+
+        if(category.numChild !== 0) {
+            category.subClasses.forEach((child) => printCategory(ul,child,format1));
+        }
     }
 
 
