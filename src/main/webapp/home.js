@@ -3,6 +3,7 @@
     // Componenti della pagina
     let pageOrchestrator = new PageOrchestrator();
     let categoriesList;
+    let creationForm;
 
 
     window.addEventListener("load", () => {
@@ -35,12 +36,53 @@
             // inizializzazione della lista delle categorie
             categoriesList = new CategoriesList(
                 alertContainer,
-                document.getElementById("id_listcontainer"),
-                document.getElementById("id_listcontainerbody")
+                document.getElementById("id_listcontainer")
             );
 
 
             // inizializzazione del form
+            creationForm = new CreationForm(
+                alertContainer,
+                document.getElementById("id_categoryform")
+            );
+
+            document.getElementById("id_formbutton").addEventListener(
+                "click", (e) => {
+                    var form  = e.target.closest("form");
+                    var self = this;
+
+                    if(form.checkValidity()) {
+                        makeCall("POST", "CreateCategory", e.target.closest("form"),
+                            function (x) {
+                                if(x.readyState == XMLHttpRequest.DONE) {
+                                    var message = x.responseText;
+
+                                    switch (x.status) {
+                                        case 200:
+                                            self.refresh();
+                                            self.alert.textContent = message;
+                                            break;
+
+                                        case 400: // bad request
+                                            self.alert.textContent = message;
+                                            break;
+
+                                        case 401: // unauthorized
+                                            self.alert.textContent = message;
+                                            break;
+
+                                        case 500: // server error
+                                            self.alert.textContent = message;
+                                            break;
+                                    }
+                                }
+
+                            });
+                    } else {
+                        form.reportValidity();
+                    }
+                }
+            );
 
 
 
@@ -53,12 +95,16 @@
 
         };
 
-        // refresh con
+
+        // refresh
 
         this.refresh = function() {
             alertContainer.textContent = "";
             categoriesList.reset();
             categoriesList.show();
+            creationForm.reset();
+            creationForm.show();
+
 
         };
 
@@ -74,10 +120,9 @@
     }
 
 
-    function CategoriesList(_alert, listcontainer, listcontainerbody) {
+    function CategoriesList(_alert, listcontainer) {
         this.alert = _alert;
         this.listcontainer = listcontainer;
-        this.listcontainerbody = listcontainerbody;
 
         this.reset = function() {
             // this.listcontainer.style.visibility = "hidden";
@@ -124,7 +169,6 @@
             var container = self.listcontainer;
 
             printCategory(container,arrayCategories);
-            // arrayCategories.forEach((category) => printCategory(ul,category));
 
             this.listcontainer.style.visibility = "visible";
         }
@@ -164,7 +208,57 @@
 
 
 
-    function CreationForm(alert) {
+    function CreationForm(_alert, formcontainer) {
+
+        this.alert = _alert;
+
+        this.reset = function () {
+
+        }
+
+        this.show = function() {
+
+            var self = this;
+            makeCall("GET", "GetCategoryFormData", null, function(req) {
+
+                if(req.readyState == 4) {
+                    var message = req.responseText;
+
+                    if(req.status == 200) {
+
+                        var optionsToShow = JSON.parse(message);
+
+                        if(optionsToShow.length == 0) {
+                            self.alert.textContent = "There are no categories present!";
+                            return;
+                        }
+                        self.update(optionsToShow);
+
+                    } else if(req.status == 403) {
+                        window.location.href = req.getResponseHeader("Location");
+                        window.sessionStorage.removeItem("userinfo");
+
+                    } else {
+                        self.alert.textContent = message;
+                    }
+                }
+            });
+        }
+
+        this.update = function(arrayOptions) {
+
+            var selection = document.getElementById("id_selection");
+            selection.innerHTML = "";
+
+            arrayOptions.forEach((element) => {
+                opt = document.createElement("option");
+                opt.value = element.id;
+                opt.text = element.name;
+                selection.appendChild(opt);
+            })
+
+        }
+
 
 
     }

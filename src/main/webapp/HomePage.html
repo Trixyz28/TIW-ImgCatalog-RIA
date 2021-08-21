@@ -16,15 +16,16 @@
 </div>
 
 <!-- Saluto personalizzato -->
-<p>
-<h1>Welcome,
-    <span id="id_userinfo"></span>!
-</h1>
-</p>
+<div>
+    <p>
+        <h1>Welcome, <span id="id_userinfo"></span>!</h1>
+    </p>
+</div>
 
 
 <!-- Per indicare l'errore se qualcosa va storto -->
 <div id="id_alert" class="alertmessage"></div>
+
 
 <!-- Lista delle categorie -->
 <div id="id_listcontainer" class="listdiv">
@@ -41,7 +42,7 @@
 
     <p>Complete the form to create a category</p>
 
-    <form id="id_createcategoryform" action="#">
+    <form id="id_categoryform" action="#">
         <fieldset>
             <p>
                 Name: <input type="text" name="newname" required />
@@ -49,13 +50,12 @@
 
             <p>
                 <label>Choose a father category:</label>
-                <select
-                        name="fid" id="fid">
+                <select id="id_selection" name="fid" >
                     <option id="id_option"></option>
                 </select>
             </p>
 
-            <input type="button" value="Create Category" name="submit" class="submit">
+            <input type="submit" id="id_formbutton" name="Create!" class="formbutton">
 
         </fieldset>
     </form>
