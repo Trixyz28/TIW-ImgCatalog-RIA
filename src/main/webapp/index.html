@@ -3,22 +3,46 @@
 <head>
     <meta charset="ISO-8859-1">
     <title>Login page</title>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="resources/css/login.css" />
     <script src="utils.js" charset="ISO-8859-1" defer></script>
     <script src="loginManagement.js" charset="ISO-8859-1" defer></script>
 
 </head>
 
 <body>
-    <h1>Welcome to the image catalogation page</h1>
 
+<div class="bgimage"></div>
+
+<div class="titlediv">
+    <h1>Welcome to the image catalogation system!</h1>
+</div>
+
+<div class="formdiv">
     <form action="#">
         <fieldset>
-            Username: <input type="text" name="username" required> <br>
-            Password: <input type="password" name="password" required><br>
-            <input type="submit" id="loginbutton" value="Login">
-            <p id="errormessage"></p>
+
+            <div class="namediv">
+                Username:  <input type="text" name="username" required> <br>
+            </div>
+
+            <div class="pswdiv">
+                Password:  <input type="password" name="password" required><br>
+            </div>
+
+            <div>
+                <input class="buttondiv" type="submit" id="loginbutton" value="Login">
+            </div>
+
+            <div class="messagediv">
+                <p id="errormessage"></p>
+            </div>
         </fieldset>
     </form>
+</div>
+
+
+
 
 </body>
 </html>

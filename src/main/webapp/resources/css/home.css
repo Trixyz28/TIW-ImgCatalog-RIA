@@ -1,12 +1,148 @@
-.formdiv {
-    width: 33%;
-    float: left;
-    display: inline;
-    margin: 10px;
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Palatino Linotype, sans-serif;
+}
+
+* {
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.bgimage {
+    height: 100%;
+    width: 100%;
+    background-image: url("../images/home_background.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-attachment: fixed;
+    filter: blur(5px);
+    opacity: 80%;
+}
+
+.maindiv {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    height: 100%;
+    width: 100%;
+}
+
+.userdiv {
+    background-color: #4c72b9ba;
+    color: white;
+    font-weight: bold;
+    z-index: 2;
+    width: fit-content;
+
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+
+
+    text-align: left;
+    font-family: Bell MT, sans-serif;
+}
+
+
+.centerdiv {
+
+    z-index: 2;
+    padding: 10px;
+
+    position: relative;
+    top: 5%;
+
+}
+
+
+.listdiv {
+    background-color: rgba(120,120,120,0.8);
+    color: white;
+    font-size: 16px;
+    z-index: 2;
+    padding: 10px;
+    text-align: left;
+    font-family: Bell MT, sans-serif;
+
+    padding: 5px;
+
+}
+
+.confirmbutton{
+    border: dimgrey;
+    padding: 8px 15px;
+    color: white;
+    background-color: rgba(160, 58, 58, 0.8);
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Palatino Linotype, sans-serif;
+    left: 80%;
+    z-index: 2;
+
+}
+
+.alertmessage {
+    color: #a10000;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 2;
     padding: 10px;
 }
 
-* {list-style: none;}
+.formdiv {
+
+    background-color: rgba(0,0,0, 0.5);
+    color: white;
+    font-weight: bold;
+    border: 3px solid #f1f1f1;
+
+    z-index: 2;
+    width: 40%;
+    text-align: center;
+
+    font-family: Palatino Linotype, sans-serif;
+    padding: 15px;
+
+    margin: 0 auto;
+}
+
+.formlabeldiv {
+    padding-bottom: 10px;
+}
+
+
+.logoutdiv {
+    color: maroon;
+    font-weight: bold;
+    position: relative;
+    text-align: right;
+    z-index: 2;
+    padding: 10px;
+}
+
+
+
+.formbutton {
+    border: none;
+    padding: 8px 14px;
+    color: white;
+    background-color: rgba(85, 115, 160, 0.8);
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Palatino Linotype, sans-serif;
+}
+
+
 
 .listdiv ul li {
     margin-left: 15px;
@@ -58,15 +194,20 @@ ul li:only-child::before {
     color: black;
 }
 
-/*
-.confirmbutton{
-    background-color: #0038c4;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
 
-}*/
+
+input {
+    padding: 2px;
+    background-color: rgba(67, 68, 75, 0.9);
+    color: white;
+    font-size: 14px;
+    font-family: Verdana, sans-serif;
+}
+
+option {
+    padding: 2px;
+    background-color: rgba(67, 68, 75, 0.9);
+    color: white;
+    font-size: 14px;
+    font-family: Verdana, sans-serif;
+}

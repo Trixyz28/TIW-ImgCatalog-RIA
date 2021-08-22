@@ -9,62 +9,79 @@
     <script src="home.js" charset="utf-8" defer></script>
 </head>
 
+
 <body>
-<!-- Link per logout -->
-<div id="id_logout" align="right">
-    <a href="Logout">Logout</a>
-</div>
 
-<!-- Saluto personalizzato -->
-<div>
-    <p>
-        <h1>Welcome, <span id="id_userinfo"></span>!</h1>
-    </p>
-</div>
+<div class="bgimage"></div>
 
+<div class="maindiv">
+    <!-- Link per logout -->
+    <div class="logoutdiv" id="id_logout" align="right">
+        <a href="Logout">Logout</a>
+    </div>
 
-<!-- Per indicare l'errore se qualcosa va storto -->
-<div id="id_alert" class="alertmessage"></div>
-
-
-<!-- Lista delle categorie -->
-<div id="id_listcontainer" class="listdiv">
-    <ul id="id_listcontainerbody">
-        <!--/* the category parameter to use in the fragment is the current child */-->
-        <li id="id_category"></li>
-    </ul>
-</div>
-
-<div>
-    <button id="id_confirmbutton" name="Confirm" class="confirmbutton">Confirm</button>
-</div>
+    <!-- Saluto personalizzato -->
+    <div class="userdiv">
+        <p>
+        <h3>Welcome, <span id="id_userinfo"></span>!</h3>
+        </p>
+    </div>
 
 
+    <div class="centerdiv">
 
-<!-- Form per la creazione di una categoria -->
-<div id="id_formdiv" class="formdiv">
+        <!-- Lista delle categorie -->
+        <div id="id_listcontainer" class="listdiv">
+            <ul id="id_listcontainerbody">
+                <!--/* the category parameter to use in the fragment is the current child */-->
+                <li id="id_category"></li>
+            </ul>
+        </div>
 
-    <label>Complete the form to create a category</label>
+        <div>
+            <button id="id_confirmbutton" name="Confirm" class="confirmbutton">Confirm</button>
+        </div>
 
-    <form id="id_categoryform" action="#">
 
-        <fieldset>
-            <p>
-                Name: <input type="text" name="newname" required />
-            </p>
+        <!-- Per indicare l'errore se qualcosa va storto -->
+        <div id="id_alert" class="alertmessage"></div>
 
-            <p>
-                <label>Choose a father category:</label>
-                <select id="id_selection" name="fid" >
-                    <option id="id_option"></option>
-                </select>
-            </p>
+        <!-- Form per la creazione di una categoria -->
+        <div id="id_formdiv" class="formdiv">
 
-            <input type="submit" id="id_formbutton" value="Submit" class="formbutton">
+            <div class="formlabeldiv">
+                <label>Complete the form to create a category</label>
+            </div>
 
-        </fieldset>
-    </form>
+
+            <form id="id_categoryform" action="#">
+
+                <fieldset>
+                    <p>
+                        Name: <input type="text" name="newname" required />
+                    </p>
+
+                    <p>
+                        <label>Father category:</label>
+                        <select id="id_selection" name="fid" >
+                            <option id="id_option"></option>
+                        </select>
+                    </p>
+
+                    <input type="submit" id="id_formbutton" value="Submit" class="formbutton">
+
+                </fieldset>
+            </form>
+        </div>
+
+
+    </div>
+
+
+
 </div>
 
 
 </body>
+
+</html>

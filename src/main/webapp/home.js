@@ -409,11 +409,11 @@
         var destLi = event.target.closest("li");
         var destUl = destLi.lastChild;
 
+        destLi.className = "notselected";
+        startElement.className = "notselected";
 
         if(!startElement.contains(destUl)) {
             destUl.appendChild(startElement);
-            destLi.className = "notselected";
-            startElement.className = "notselected";
 
             var fid = destLi.getAttribute("categoryid");
             var cid = startElement.getAttribute("categoryid");
@@ -426,7 +426,10 @@
             } else {
                 startUl.appendChild(startElement);
             }
+        } else {
+            alert("invalid!");
         }
+
 
     }
 
