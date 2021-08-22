@@ -90,7 +90,7 @@ public class MoveCategory extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().print("Operation completed successfully");
+        response.getWriter().println("Operation completed successfully");
 
     }
 

@@ -68,7 +68,7 @@ public class CreateCategory extends HttpServlet {
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().print("Creation completed");
+        response.getWriter().println("Creation completed");
 
     }
 

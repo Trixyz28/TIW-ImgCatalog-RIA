@@ -30,7 +30,7 @@
         this.start = function() {
 
             // riferimento allo spazio per le notifiche
-            alertContainer = document.getElementById("id_alert")
+            alertContainer = new AlertContainer(document.getElementById("id_alert"));
 
             // inizializzazione del saluto personalizzato
             personalMessage = new PersonalMessage(
@@ -75,7 +75,6 @@
                                 case 200:
                                     pageOrchestrator.refresh();
                                     alertContainer.textContent = message;
-                                    alert("Operation completed!");
                                     break;
 
                                 case 400: // bad request
@@ -156,7 +155,7 @@
 
         // refresh
         this.refresh = function() {
-            alertContainer.textContent = "";
+            alertContainer.reset();
             categoriesList.reset();
             categoriesList.show();
             creationForm.reset();
@@ -175,6 +174,16 @@
         this.show = function () {
             messagecontainer.textContent = this.userinfo;
         }
+    }
+
+    function AlertContainer(_alert) {
+        this.alert = _alert;
+        var self = this;
+
+        this.reset = function() {
+            self.alert.textContent = "";
+        }
+
     }
 
 
@@ -366,19 +375,12 @@
     }
 
 
-    function unselectRows(rowsArray) {
-        for (var i = 0; i < rowsArray.length; i++) {
-            rowsArray[i].className = "notselected";
-        }
-    }
-
     /* The dragstart event is fired when the user starts dragging an element (if it is draggable=True) */
     function dragStart(event) {
         /* we need to save in a variable the row that provoked the event
          to then move it to the new position */
         startUl = event.target.closest("ul");
         startElement = event.target.closest("li");
-        creationForm.reset();
     }
 
 
@@ -423,6 +425,7 @@
                 modifiedList.push([fid,cid]);
                 // console.table(modifiedList);
                 confirmButton.show();
+                creationForm.reset();
             } else {
                 startUl.appendChild(startElement);
             }
