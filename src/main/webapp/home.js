@@ -86,8 +86,8 @@
                                     break;
 
                                 case 500: // server error
-                                     alertContainer.textContent = message;
-                                     break;
+                                    alertContainer.textContent = message;
+                                    break;
                                 }
                             }
 
@@ -270,13 +270,20 @@
             var label;
 
             const li = document.createElement("li");
-            li.draggable = true;
-
-            categoryNum = document.createTextNode( category.position + " ");
-            categoryName = document.createTextNode(category.name + "  ");
 
             label = document.createElement("label");
-            label.appendChild(categoryNum)
+
+            if(category.isTop) {
+                categoryName = document.createTextNode("\xa0\xa0\xa0\xa0" + category.name);
+                li.draggable = false;
+                li.className = "top";
+            } else {
+                li.draggable = true;
+                categoryNum = document.createTextNode( category.position + "\xa0\xa0");
+                label.appendChild(categoryNum);
+                categoryName = document.createTextNode(category.name);
+            }
+
             label.appendChild(categoryName);
             label.setAttribute("categoryid", category.id);
             li.appendChild(label);
@@ -296,10 +303,12 @@
 
     function setListEvents(li,label) {
 
-        li.addEventListener("dragstart",(e) => {
-            dragStart(e);
-        });
 
+        if(li.draggable) {
+            li.addEventListener("dragstart",(e) => {
+                dragStart(e);
+            });
+        }
         li.addEventListener("dragover", (e) => {
             dragOver(e);
         });
@@ -307,6 +316,7 @@
         li.addEventListener("dragleave", (e) => {
             dragLeave(e);
         });
+
 
         label.addEventListener("drop", (e) => {
            drop(e);

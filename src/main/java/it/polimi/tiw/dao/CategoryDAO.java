@@ -39,7 +39,7 @@ public class CategoryDAO {
     public List<Category> findTopsAndSubtrees() throws SQLException {
 
         List<Category> categories = new ArrayList<>();
-        String query = "SELECT * FROM category WHERE id NOT IN (select child FROM relations) ORDER BY position ASC";
+        String query = "SELECT * FROM category WHERE id=0";
 
         try (PreparedStatement pstatement = connection.prepareStatement(query)) {
 
@@ -129,7 +129,7 @@ public class CategoryDAO {
         try {
             for(int i=0;i<arr.length;i++) {
 
-                if(arr[i][0]<=0 || arr[i][1]<=0) {
+                if(arr[i][0]<0 || arr[i][1]<=0) {
                     throw new Exception();
                 }
 

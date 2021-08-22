@@ -79,6 +79,7 @@ input {
     color: white;
     font-size: 14px;
     font-family: Verdana, sans-serif;
+    text-align: center;
 }
 
 .messagediv {

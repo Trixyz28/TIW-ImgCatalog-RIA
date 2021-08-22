@@ -41,7 +41,7 @@ public class CreateCategory extends HttpServlet {
         try {
             fid = Integer.parseInt(fidParam);
 
-            if(fid <= 0) {
+            if(fid < 0) {
                 badRequest = true;
             }
         } catch (NumberFormatException e) {

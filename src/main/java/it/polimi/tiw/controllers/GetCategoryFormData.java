@@ -51,7 +51,7 @@ public class GetCategoryFormData extends HttpServlet {
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(allcategories);
         response.setContentType("application/json");
-        response.setCharacterEncoding("ISO-8859-1");
+        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
 
     }
