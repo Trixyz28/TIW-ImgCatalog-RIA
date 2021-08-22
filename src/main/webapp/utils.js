@@ -18,7 +18,7 @@ function makeCall(method, url, formElement, cback, reset = true) {
     }
 }
 
-function makeCallArray(method, url, element, cback) {
+function makeCallJson(method, url, element, cback) {
 
     var req = new XMLHttpRequest();
 

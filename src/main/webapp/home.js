@@ -1,7 +1,6 @@
 
 (function() {
 
-
     // Componenti della pagina
     let pageOrchestrator = new PageOrchestrator();
     let alertContainer;
@@ -65,18 +64,18 @@
 
                 if(modifiedList.length>0) {
 
-                    makeCallArray("POST", "MoveCategory", json,
+                    makeCallJson("POST", "MoveCategory", json,
                             function (x) {
 
                         if(x.readyState == XMLHttpRequest.DONE) {
 
                             var message = x.responseText;
-
                             switch (x.status) {
 
                                 case 200:
                                     pageOrchestrator.refresh();
                                     alertContainer.textContent = message;
+                                    alert("Operation completed!");
                                     break;
 
                                 case 400: // bad request
@@ -98,7 +97,6 @@
                     alertContainer.textContent = "Invalid operation!"
                 }
             });
-
 
 
             // inizializzazione del form
@@ -146,7 +144,6 @@
             );
 
 
-
             // gestione logout
             document.getElementById("id_logout").addEventListener(
                 "click", () => {
@@ -158,7 +155,6 @@
 
 
         // refresh
-
         this.refresh = function() {
             alertContainer.textContent = "";
             categoriesList.reset();
@@ -305,7 +301,6 @@
 
         label.addEventListener("drop", (e) => {
            drop(e);
-           confirmButton.show();
         });
 
     }
@@ -426,7 +421,8 @@
 
             if(confirm("Do you want to confirm the move?")) {
                 modifiedList.push([fid,cid]);
-                console.table(modifiedList);
+                // console.table(modifiedList);
+                confirmButton.show();
             } else {
                 startUl.appendChild(startElement);
             }

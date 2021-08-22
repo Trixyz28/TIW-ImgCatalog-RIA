@@ -46,7 +46,6 @@ public class MoveCategory extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        System.out.println("received a post");
 
         StringBuffer buffer = new StringBuffer();
         String line = null;
@@ -54,11 +53,15 @@ public class MoveCategory extends HttpServlet {
             BufferedReader reader = request.getReader();
             while ((line = reader.readLine()) != null)
                 buffer.append(line);
-        } catch (Exception e) { /*report an error*/ }
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Error in parsing input");
+            return;
+        }
 
         String result = buffer.toString();
 
-        System.out.println(result);
+        // System.out.println(result);
 
         Gson gson = new Gson();
         int[][] arr;

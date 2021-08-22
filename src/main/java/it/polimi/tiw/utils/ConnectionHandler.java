@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+
 public class ConnectionHandler {
     public static Connection getConnection(ServletContext context) throws UnavailableException {
         Connection connection = null;
