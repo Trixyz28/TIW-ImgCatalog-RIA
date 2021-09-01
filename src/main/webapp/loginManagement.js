@@ -11,7 +11,7 @@
         if (form.checkValidity()) {
 
             // Crea una XMLHttpRequest
-            makeCall("POST", 'Login', e.target.closest("form"), function(x) {
+            makeCall("POST", "Login", form, function(x) {
 
                 if (x.readyState == XMLHttpRequest.DONE) {
                     var message = x.responseText;

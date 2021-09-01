@@ -10,7 +10,6 @@ public class Category implements Serializable {
     private int id;
     private String name;
     private int position;
-    private int numChild;
 
     private Boolean isTop = false;
     private List<Category> subClasses = new ArrayList<>();
@@ -38,14 +37,6 @@ public class Category implements Serializable {
 
     public void setPosition(int position) {
         this.position = position;
-    }
-
-    public int getNumChild() {
-        return numChild;
-    }
-
-    public void setNumChild(int numChild) {
-        this.numChild = numChild;
     }
 
     public Boolean getTop() {

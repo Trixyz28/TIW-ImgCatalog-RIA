@@ -3,11 +3,10 @@
 
     // Componenti della pagina
     let pageOrchestrator = new PageOrchestrator();
-    let alertContainer;
-    let categoriesList;
+    let personalMessage, alertContainer;
+    let categoriesList, confirmButton;
     let creationForm;
     let startUl, startElement;
-    let confirmButton;
     let modifiedList;
 
 
@@ -29,14 +28,16 @@
 
         this.start = function() {
 
-            // riferimento allo spazio per le notifiche
-            alertContainer = new AlertContainer(document.getElementById("id_alert"));
-
             // inizializzazione del saluto personalizzato
             personalMessage = new PersonalMessage(
                 sessionStorage.getItem("userinfo"),
                 document.getElementById("id_userinfo"));
             personalMessage.show();
+
+            // riferimento allo spazio per le notifiche
+            alertContainer = new AlertContainer(document.getElementById("id_alert"));
+            alertContainer.reset();
+
 
             // inizializzazione della lista delle categorie
             categoriesList = new CategoriesList(

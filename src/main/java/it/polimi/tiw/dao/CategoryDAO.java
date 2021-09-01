@@ -43,7 +43,7 @@ public class CategoryDAO {
 
         try (PreparedStatement pstatement = connection.prepareStatement(query)) {
 
-            try (ResultSet result = pstatement.executeQuery();) {
+            try (ResultSet result = pstatement.executeQuery()) {
                 while (result.next()) {
                     Category newCat = registerCategory(result);
                     newCat.setTop(true);
@@ -60,7 +60,7 @@ public class CategoryDAO {
 
     public void findSubclasses(Category c) throws SQLException {
 
-        String query = "SELECT C.id, C.name, C.position, C.num_child FROM relations R JOIN category C on C.id = R.child WHERE R.father = ? ORDER BY C.position ASC";
+        String query = "SELECT C.id, C.name, C.position FROM subcats R JOIN category C on C.id = R.child WHERE R.father = ? ORDER BY C.position ASC";
 
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 
@@ -99,16 +99,17 @@ public class CategoryDAO {
                 throw new SQLException();
             }
 
-            if(father.getNumChild() >= 9) {
+            int fatherNumChild = findNumChild(father);
+
+            if(fatherNumChild >= 9) {
                 throw new Exception();
             }
 
-            newNumChild = father.getNumChild()+1;
+            newNumChild = fatherNumChild+1;
             newPosition = (father.getPosition()*10)+(newNumChild);
 
-            updateNumChild(newNumChild,fid);
             insertNewCategory(name,newPosition);
-            addLink(fid,findMaxId());
+            addLink(fid,findIdByName(name));
 
             connection.commit();
 
@@ -160,8 +161,6 @@ public class CategoryDAO {
     - Trace oldfather with cid from relations table #
     - Take note about the child oldposition #
     - Trace oldfather's other children, update their position index if > oldposition
-    - Update oldfather's num_child #
-    - Update newfather's num_child #
     - Update child's position
     - Update all its subtrees' position
     - Delete link oldfid - cid from relations table
@@ -180,14 +179,16 @@ public class CategoryDAO {
             throw new SQLException();
         }
 
-        if(destination.getNumChild() >= 9) {
-            throw new Exception();
+        int destNumChild = findNumChild(destination);
+
+        if(destNumChild >= 9) {
+            throw new Exception("Maximum number of children reached");
         }
         if(cyclicLinkExists(destid,cid)) {
-            throw new Exception();
+            throw new Exception("Impossible to complete the move");
         }
 
-        String query = "SELECT father FROM relations WHERE child = ?";
+        String query = "SELECT father FROM subcats WHERE child = ?";
         try (PreparedStatement pStatement = connection.prepareStatement(query)) {
             pStatement.setInt(1, cid);
             try (ResultSet result = pStatement.executeQuery()) {
@@ -201,14 +202,6 @@ public class CategoryDAO {
 
         if(idOldFather != destination.getId()) {
             oldFather = findById(idOldFather);
-
-            int oldNumChild = oldFather.getNumChild();
-            oldFather.setNumChild(oldNumChild-1);
-            updateNumChild(oldNumChild-1,idOldFather);
-
-            int destNumChild = destination.getNumChild();
-            destination.setNumChild(destNumChild+1);
-            updateNumChild(destNumChild+1,destid);
 
             /* Update child's position and its subtrees' ones*/
             int newPosition = (destination.getPosition()*10)+ (destNumChild+1);
@@ -247,7 +240,7 @@ public class CategoryDAO {
                         }
 
                     } else {
-                        int newPosition = (destination.getPosition()*10) + destination.getNumChild();
+                        int newPosition = (destination.getPosition()*10) + destNumChild;
                         c.setPosition(newPosition);
                         updatePosition(c.getPosition(),c.getId());
                         recUpdatePosition(c);
@@ -288,21 +281,11 @@ public class CategoryDAO {
 
         cat.setId(result.getInt("id"));
         cat.setName(result.getString("name"));
-        cat.setNumChild(result.getInt("num_child"));
         cat.setPosition(result.getInt("position"));
 
         return cat;
     }
 
-
-    private void updateNumChild(int numChild,int fid) throws SQLException {
-        String query = "UPDATE category SET num_child = ? WHERE id = ?";
-        try (PreparedStatement pStatement = connection.prepareStatement(query)) {
-            pStatement.setInt(1,numChild);
-            pStatement.setInt(2,fid);
-            pStatement.executeUpdate();
-        }
-    }
 
     private void updatePosition(int position, int id) throws SQLException {
         String query = "UPDATE category SET position = ? WHERE id = ?";
@@ -324,7 +307,7 @@ public class CategoryDAO {
     }
 
     private void addLink(int fid, int cid) throws SQLException {
-        String query = "INSERT into relations(father, child) VALUES(?, ?)";
+        String query = "INSERT into subcats(father, child) VALUES(?, ?)";
         try (PreparedStatement pstatement = connection.prepareStatement(query)) {
             pstatement.setInt(1, fid);
             pstatement.setInt(2, cid);
@@ -333,7 +316,7 @@ public class CategoryDAO {
     }
 
     private void deleteLink(int fid, int cid) throws SQLException {
-        String query = "DELETE from relations WHERE father = ? AND child = ?";
+        String query = "DELETE from subcats WHERE father = ? AND child = ?";
         try (PreparedStatement pstatement = connection.prepareStatement(query)) {
             pstatement.setInt(1, fid);
             pstatement.setInt(2, cid);
@@ -341,25 +324,12 @@ public class CategoryDAO {
         }
     }
 
-    private int findMaxId() throws SQLException {
-        String query = "SELECT MAX(id) FROM category";
-        int max = 0;
-
-        try (PreparedStatement pStatement = connection.prepareStatement(query)) {
-            try (ResultSet result = pStatement.executeQuery()) {
-                while (result.next()) {
-                    max = result.getInt(1);
-                }
-            }
-        }
-        return max;
-    }
 
     private boolean cyclicLinkExists(int p1, int p2) throws SQLException {
         //check if p2 is an ancestor of p1 by using RECURSIVE
         boolean exists = false;
 
-        String query = "with recursive cte (father, child) as (select father, child from relations where child = ? union all select p.father, p.child from relations p inner join cte on p.child = cte.father) select  * from cte where father = ?;";
+        String query = "with recursive cte (father, child) as (select father, child from subcats where child = ? union all select p.father, p.child from subcats p inner join cte on p.child = cte.father) select  * from cte where father = ?;";
         try (PreparedStatement pstatement = connection.prepareStatement(query);) {
             pstatement.setInt(1, p1);
             pstatement.setInt(2, p2);
@@ -390,6 +360,42 @@ public class CategoryDAO {
 
             }
         }
+    }
+
+    private int findIdByName(String str) throws SQLException {
+
+        int index = -1;
+        String query = "SELECT id FROM category WHERE name = ?";
+
+        try (PreparedStatement pStatement = connection.prepareStatement(query)) {
+            pStatement.setString(1,str);
+            try (ResultSet result = pStatement.executeQuery()) {
+                while (result.next()) {
+                    index = result.getInt(1);
+                }
+            }
+        }
+
+        return index;
+    }
+
+    private int findNumChild(Category father) throws SQLException {
+
+        int fid = father.getId();
+        int nChild = 0;
+
+        String query = "SELECT COUNT(*) AS num FROM subcats WHERE father = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setInt(1, fid);
+            try (ResultSet result = pstatement.executeQuery()) {
+                while (result.next()) {
+                    nChild = result.getInt("num");
+                }
+            }
+        }
+
+        return nChild;
+
     }
 
 
