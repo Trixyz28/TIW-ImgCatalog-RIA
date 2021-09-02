@@ -190,22 +190,27 @@
                                         self.alert.textContent = message;
                                         break;
 
-                                    case 400: // bad request
-                                        self.alert.textContent = message;
-                                        break;
-
-                                    case 401: // unauthorized
-                                        self.alert.textContent = message;
+                                    case 403:
+                                        window.location.href = req.getResponseHeader("Location");
+                                        window.sessionStorage.removeItem('username');
                                         break;
 
                                     case 500: // server error
                                         self.alert.textContent = message;
                                         break;
+
+                                    default:
+                                        // 400 bad request, 401 unauthorized
+                                        orchestrator.refresh();
+                                        self.alert.textContent = message;
+                                        break;
+
                                 }
                             }
 
                         });
                 } else {
+                    orchestrator.refresh();
                     self.alert.textContent = "Invalid operation!";
                 }
             });
@@ -308,17 +313,16 @@
                                             self.alert.textContent = message;
                                             break;
 
-                                        case 400: // bad request
+                                        case 403:
+                                            window.location.href = req.getResponseHeader("Location");
+                                            window.sessionStorage.removeItem('username');
+                                            break;
+
+                                        default:
+                                            // 400 bad request, 401 unauthorized, 500 server error
                                             self.alert.textContent = message;
                                             break;
 
-                                        case 401: // unauthorized
-                                            self.alert.textContent = message;
-                                            break;
-
-                                        case 500: // server error
-                                            self.alert.textContent = message;
-                                            break;
                                     }
                                 }
 
