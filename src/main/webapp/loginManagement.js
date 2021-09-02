@@ -5,6 +5,8 @@
 (function() { // avoid variables ending up in the global scope
 
     document.getElementById("loginbutton").addEventListener('click', (e) => {
+
+        e.preventDefault();
         let form = e.target.closest("form");
 
         // In questo caso checkValidity controlla se rispetta"required"
@@ -42,7 +44,6 @@
             });
 
         } else {
-
             // Funzione automatica per il messaggio di errore (checkValidity fallito)
             form.reportValidity();
         }

@@ -7,8 +7,7 @@
     let categoriesList, confirmButton;
     let creationForm;
     let startUl, startElement;
-    let modifiedList;
-
+    // let modifiedList;
 
     window.addEventListener("load", () => {
 
@@ -26,7 +25,7 @@
 
     function PageOrchestrator() {
 
-        var alertContainer = document.getElementById("id_alert");
+        let alertContainer = document.getElementById("id_alert");
 
         this.start = function() {
 
@@ -35,12 +34,6 @@
                 sessionStorage.getItem("userinfo"),
                 document.getElementById("id_userinfo"));
             personalMessage.show();
-
-            /* riferimento allo spazio per le notifiche
-            alertContainer = new AlertContainer(document.getElementById("id_alert"));
-            alertContainer.reset();
-
-             */
 
 
             // inizializzazione della lista delle categorie
@@ -51,7 +44,7 @@
 
 
             // inizializzazione lista movimenti
-            modifiedList = new Array();
+            resetModifiedList();
 
             // inizializzazione del pulsante di conferma
             confirmButton = new ConfirmButton(
@@ -82,15 +75,19 @@
 
         // refresh
         this.refresh = function() {
-            // alertContainer.reset();
             alertContainer.textContent = "";
             categoriesList.show();
             creationForm.reset();
             creationForm.show();
             confirmButton.reset();
-            modifiedList = new Array();
+            resetModifiedList();
         };
 
+    }
+
+    function resetModifiedList() {
+        let modifiedList = new Array();
+        sessionStorage.setItem("modList",JSON.stringify(modifiedList));
     }
 
 
@@ -151,7 +148,6 @@
 
             printCategory(container,arrayCategories,alert);
 
-            self.listcontainer.style.visibility = "visible";
         }
     }
 
@@ -171,11 +167,13 @@
         }
 
         this.registerEvents = function(orchestrator) {
+
             this.button.addEventListener("click", (e) => {
 
                 var self = this;
 
-                var json = JSON.stringify(modifiedList);
+                var json = sessionStorage.getItem("modList");
+                var modifiedList = JSON.parse(json);
 
                 if(modifiedList.length > 0) {
 
@@ -293,6 +291,8 @@
 
             document.getElementById("id_formbutton").addEventListener(
                 "click", (e) => {
+
+                    e.preventDefault();
                     var form  = e.target.closest("form");
                     var self = this;
 
@@ -391,6 +391,7 @@
          to then move it to the new position */
         startUl = event.target.closest("ul");
         startElement = event.target.closest("li");
+
         alert.textContent = "";
     }
 
@@ -428,13 +429,13 @@
         if(!startElement.contains(destUl)) {
             destUl.appendChild(startElement);
 
-            var fid = destLi.getAttribute("categoryid");
-            var cid = startElement.getAttribute("categoryid");
+            let fid = destLi.getAttribute("categoryid");
+            let cid = startElement.getAttribute("categoryid");
 
 
             if(confirm("Do you want to confirm the move?")) {
-                modifiedList.push([fid,cid]);
-                // console.table(modifiedList);
+                updateLocalList([fid,cid]);
+
                 confirmButton.show();
                 creationForm.reset();
             } else {
@@ -444,6 +445,14 @@
             alert("Invalid operation!");
         }
 
+    }
+
+    function updateLocalList(newElement) {
+        var modifiedList = JSON.parse(sessionStorage.getItem("modList"));
+        modifiedList.push(newElement);
+        sessionStorage.setItem("modList",JSON.stringify(modifiedList));
+
+        // console.table(modifiedList);
     }
 
 

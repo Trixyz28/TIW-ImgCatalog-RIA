@@ -31,13 +31,13 @@ public class GetCategoryFormData extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        List<Category> allcategories = null;
+        List<Category> allCategories = null;
 
         CategoryDAO categoryDAO = new CategoryDAO(connection);
 
 
         try {
-            allcategories = categoryDAO.findAllCategories();
+            allCategories = categoryDAO.findAllCategories();
 
         } catch(Exception e) {
             e.printStackTrace();
@@ -49,7 +49,7 @@ public class GetCategoryFormData extends HttpServlet {
         // Redirect to the Home page and add categories to the parameters
 
         Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(allcategories);
+        String json = gson.toJson(allCategories);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);

@@ -26,7 +26,6 @@ function makeCallJson(method, url, element, cback) {
         cback(req)
     };
 
-
     req.open(method,url);
     req.setRequestHeader('Content-Type','application/json');
     req.send(element);
