@@ -5,7 +5,7 @@
 (function() { // avoid variables ending up in the global scope
 
     document.getElementById("loginbutton").addEventListener('click', (e) => {
-        var form = e.target.closest("form");
+        let form = e.target.closest("form");
 
         // In questo caso checkValidity controlla se rispetta"required"
         if (form.checkValidity()) {

@@ -3,7 +3,7 @@
 
     // Componenti della pagina
     let pageOrchestrator = new PageOrchestrator();
-    let personalMessage, alertContainer;
+    let personalMessage;
     let categoriesList, confirmButton;
     let creationForm;
     let startUl, startElement;
@@ -26,6 +26,8 @@
 
     function PageOrchestrator() {
 
+        var alertContainer = document.getElementById("id_alert");
+
         this.start = function() {
 
             // inizializzazione del saluto personalizzato
@@ -34,9 +36,11 @@
                 document.getElementById("id_userinfo"));
             personalMessage.show();
 
-            // riferimento allo spazio per le notifiche
+            /* riferimento allo spazio per le notifiche
             alertContainer = new AlertContainer(document.getElementById("id_alert"));
             alertContainer.reset();
+
+             */
 
 
             // inizializzazione della lista delle categorie
@@ -55,48 +59,7 @@
                 document.getElementById("id_confirmbutton")
             );
             confirmButton.reset();
-
-            document.getElementById("id_confirmbutton").addEventListener("click", (e) => {
-
-                var self = this;
-
-                var json = JSON.stringify(modifiedList);
-
-
-                if(modifiedList.length>0) {
-
-                    makeCallJson("POST", "MoveCategory", json,
-                            function (x) {
-
-                        if(x.readyState == XMLHttpRequest.DONE) {
-
-                            var message = x.responseText;
-                            switch (x.status) {
-
-                                case 200:
-                                    pageOrchestrator.refresh();
-                                    alertContainer.textContent = message;
-                                    break;
-
-                                case 400: // bad request
-                                    alertContainer.textContent = message;
-                                    break;
-
-                                case 401: // unauthorized
-                                    alertContainer.textContent = message;
-                                    break;
-
-                                case 500: // server error
-                                    alertContainer.textContent = message;
-                                    break;
-                                }
-                            }
-
-                        });
-                } else {
-                    alertContainer.textContent = "Invalid operation!"
-                }
-            });
+            confirmButton.registerEvents(this);
 
 
             // inizializzazione del form
@@ -104,44 +67,7 @@
                 alertContainer,
                 document.getElementById("id_categoryform")
             );
-
-            document.getElementById("id_formbutton").addEventListener(
-                "click", (e) => {
-                    var form  = e.target.closest("form");
-                    var self = this;
-
-                    if(form.checkValidity()) {
-                        makeCall("POST", "CreateCategory", e.target.closest("form"),
-                            function (x) {
-                                if(x.readyState == XMLHttpRequest.DONE) {
-                                    var message = x.responseText;
-
-                                    switch (x.status) {
-                                        case 200:
-                                            pageOrchestrator.refresh();
-                                            alertContainer.textContent = message;
-                                            break;
-
-                                        case 400: // bad request
-                                            alertContainer.textContent = message;
-                                            break;
-
-                                        case 401: // unauthorized
-                                            alertContainer.textContent = message;
-                                            break;
-
-                                        case 500: // server error
-                                            alertContainer.textContent = message;
-                                            break;
-                                    }
-                                }
-
-                            });
-                    } else {
-                        form.reportValidity();
-                    }
-                }
-            );
+            creationForm.registerEvents(this);
 
 
             // gestione logout
@@ -156,14 +82,13 @@
 
         // refresh
         this.refresh = function() {
-            alertContainer.reset();
-            categoriesList.reset();
+            // alertContainer.reset();
+            alertContainer.textContent = "";
             categoriesList.show();
             creationForm.reset();
             creationForm.show();
             confirmButton.reset();
             modifiedList = new Array();
-
         };
 
     }
@@ -172,29 +97,16 @@
 
     function PersonalMessage(_userinfo, messagecontainer) {
         this.userinfo = _userinfo;
+
         this.show = function () {
             messagecontainer.textContent = this.userinfo;
         }
-    }
-
-    function AlertContainer(_alert) {
-        this.alert = _alert;
-        var self = this;
-
-        this.reset = function() {
-            self.alert.textContent = "";
-        }
-
     }
 
 
     function CategoriesList(_alert, listcontainer) {
         this.alert = _alert;
         this.listcontainer = listcontainer;
-
-        this.reset = function() {
-            // this.listcontainer.style.visibility = "hidden";
-        }
 
         this.show = function() {
 
@@ -234,30 +146,77 @@
             this.listcontainer.innerHTML = "";
 
             var self = this;
+            var alert = self.alert;
             var container = self.listcontainer;
 
-            printCategory(container,arrayCategories);
+            printCategory(container,arrayCategories,alert);
 
-            this.listcontainer.style.visibility = "visible";
+            self.listcontainer.style.visibility = "visible";
         }
     }
 
     function ConfirmButton(_alert, button) {
 
+        this.alert = _alert;
+        this.button = button;
+
         this.reset = function() {
-            button.style.visibility = "hidden";
-            button.disabled = true;
+            this.button.style.visibility = "hidden";
+            this.button.disabled = true;
         }
 
         this.show = function () {
-            button.disabled = false;
-            button.style.visibility = "visible";
+            this.button.disabled = false;
+            this.button.style.visibility = "visible";
+        }
+
+        this.registerEvents = function(orchestrator) {
+            this.button.addEventListener("click", (e) => {
+
+                var self = this;
+
+                var json = JSON.stringify(modifiedList);
+
+                if(modifiedList.length > 0) {
+
+                    makeCallJson("POST", "MoveCategory", json,
+                        function (x) {
+
+                            if(x.readyState == XMLHttpRequest.DONE) {
+
+                                var message = x.responseText;
+                                switch (x.status) {
+
+                                    case 200:
+                                        orchestrator.refresh();
+                                        self.alert.textContent = message;
+                                        break;
+
+                                    case 400: // bad request
+                                        self.alert.textContent = message;
+                                        break;
+
+                                    case 401: // unauthorized
+                                        self.alert.textContent = message;
+                                        break;
+
+                                    case 500: // server error
+                                        self.alert.textContent = message;
+                                        break;
+                                }
+                            }
+
+                        });
+                } else {
+                    self.alert.textContent = "Invalid operation!";
+                }
+            });
         }
 
     }
 
 
-    function printCategory(container, categories) {
+    function printCategory(container, categories, alert) {
 
         if(!categories) {
             return;
@@ -267,7 +226,7 @@
 
         for(category of categories) {
 
-            var categoryNum, categoryName, linkText, anchor;
+            var categoryNum, categoryName;
             var label;
 
             const li = document.createElement("li");
@@ -291,10 +250,10 @@
 
             li.setAttribute("categoryid",category.id);
 
-            setListEvents(li,label);
+            setListEvents(li,label,alert);
 
             if(category.subClasses) {
-                printCategory(li,category.subClasses);
+                printCategory(li,category.subClasses, alert);
             }
             ul.appendChild(li);
 
@@ -302,12 +261,11 @@
         container.appendChild(ul);
     }
 
-    function setListEvents(li,label) {
-
+    function setListEvents(li,label,alert) {
 
         if(li.draggable) {
             li.addEventListener("dragstart",(e) => {
-                dragStart(e);
+                dragStart(e,alert);
             });
         }
         li.addEventListener("dragover", (e) => {
@@ -317,7 +275,6 @@
         li.addEventListener("dragleave", (e) => {
             dragLeave(e);
         });
-
 
         label.addEventListener("drop", (e) => {
            drop(e);
@@ -331,6 +288,48 @@
     function CreationForm(_alert, formcontainer) {
 
         this.alert = _alert;
+
+        this.registerEvents = function(orchestrator) {
+
+            document.getElementById("id_formbutton").addEventListener(
+                "click", (e) => {
+                    var form  = e.target.closest("form");
+                    var self = this;
+
+                    if(form.checkValidity()) {
+                        makeCall("POST", "CreateCategory", e.target.closest("form"),
+                            function (x) {
+                                if(x.readyState == XMLHttpRequest.DONE) {
+                                    var message = x.responseText;
+
+                                    switch (x.status) {
+                                        case 200:
+                                            orchestrator.refresh();
+                                            self.alert.textContent = message;
+                                            break;
+
+                                        case 400: // bad request
+                                            self.alert.textContent = message;
+                                            break;
+
+                                        case 401: // unauthorized
+                                            self.alert.textContent = message;
+                                            break;
+
+                                        case 500: // server error
+                                            self.alert.textContent = message;
+                                            break;
+                                    }
+                                }
+
+                            });
+                    } else {
+                        form.reportValidity();
+                    }
+                }
+            );
+
+        }
 
         this.reset = function () {
             document.getElementById("id_formdiv").style.display = "none";
@@ -387,11 +386,12 @@
 
 
     /* The dragstart event is fired when the user starts dragging an element (if it is draggable=True) */
-    function dragStart(event) {
+    function dragStart(event,alert) {
         /* we need to save in a variable the row that provoked the event
          to then move it to the new position */
         startUl = event.target.closest("ul");
         startElement = event.target.closest("li");
+        alert.textContent = "";
     }
 
 
@@ -441,9 +441,8 @@
                 startUl.appendChild(startElement);
             }
         } else {
-            alert("invalid!");
+            alert("Invalid operation!");
         }
-
 
     }
 
