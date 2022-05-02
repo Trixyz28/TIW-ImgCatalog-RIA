@@ -62,7 +62,7 @@ public class CategoryDAO {
 
         String query = "SELECT C.id, C.name, C.position FROM subcats R JOIN category C on C.id = R.child WHERE R.father = ? ORDER BY C.position ASC";
 
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+        try (PreparedStatement pstatement = connection.prepareStatement(query)) {
 
             pstatement.setInt(1, c.getId());
 
@@ -140,6 +140,8 @@ public class CategoryDAO {
                 moveCategory(cid,fid);
 
             }
+
+            connection.commit();
 
         } catch(Exception e) {
             connection.rollback();
@@ -330,7 +332,7 @@ public class CategoryDAO {
         boolean exists = false;
 
         String query = "with recursive cte (father, child) as (select father, child from subcats where child = ? union all select p.father, p.child from subcats p inner join cte on p.child = cte.father) select  * from cte where father = ?;";
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+        try (PreparedStatement pstatement = connection.prepareStatement(query)) {
             pstatement.setInt(1, p1);
             pstatement.setInt(2, p2);
             // System.out.println(pstatement.toString());
@@ -385,7 +387,7 @@ public class CategoryDAO {
         int nChild = 0;
 
         String query = "SELECT COUNT(*) AS num FROM subcats WHERE father = ?";
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+        try (PreparedStatement pstatement = connection.prepareStatement(query)) {
             pstatement.setInt(1, fid);
             try (ResultSet result = pstatement.executeQuery()) {
                 while (result.next()) {
